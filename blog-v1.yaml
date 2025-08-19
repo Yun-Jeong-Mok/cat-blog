@@ -1,0 +1,35 @@
+# Save the output of this file and use kubectl create -f to import
+# it into Kubernetes.
+#
+# Created with podman-5.4.0
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    io.kubernetes.cri-o.SandboxID/db: 63f2a4398fd3a8be5dfec8518bf1adb85f2350955e34192143ac093d07449c99
+    io.kubernetes.cri-o.SandboxID/web: 63f2a4398fd3a8be5dfec8518bf1adb85f2350955e34192143ac093d07449c99
+  creationTimestamp: "2025-08-18T05:43:22Z"
+  labels:
+    app: blog
+  name: blog
+spec:
+  containers:
+  - args:
+    - postgres
+    image: quay.io/yjm011019/blog:db-v1
+    name: db
+    ports:
+    - containerPort: 8080
+      hostPort: 80
+    volumeMounts:
+    - mountPath: /var/lib/postgresql/data
+      name: blog-pgdata-pvc
+  - image: quay.io/yjm011019/blog:web-v1
+    name: web
+    volumeMounts:
+    - mountPath: /var/lib/postgresql/data
+      name: blog-pgdata-pvc
+  volumes:
+  - name: blog-pgdata-pvc
+    persistentVolumeClaim:
+      claimName: blog-pgdata
